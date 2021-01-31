@@ -10,5 +10,6 @@ public class HandleCameraFollow : MonoBehaviour
     private void Start()
     {
         cameraFollow.SetupCamera(() => playerTransform.position);
+        cameraFollow.SetCameraOfsetFunc(() => new Vector3(0f, 20f, -10f));
     }
 }

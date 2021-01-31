@@ -1,53 +1,62 @@
 ﻿using UnityEngine;
+using RPG.Movement;
+using RPG.Combat;
+using RPG.Enemies;
 
 namespace RPG.Controller
 {
     public class PlayerControl : MonoBehaviour
     {
-        Animator animator;
+        CharacterFighter fighter;
         CharacterMovement movement;
 
         private void Start()
         {
-            animator = GetComponentInChildren<Animator>();
             movement = GetComponent<CharacterMovement>();
+            fighter = GetComponent<CharacterFighter>();
         }
 
         void Update()
         {
             PlayerMouseControl();
-            PlayerAnimationController();
         }
 
         private void PlayerMouseControl()
         {
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(1))
             {
-                Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit raycastHit;
+                ProcessMouseInput();
+            }
+        }
 
-                if (Physics.Raycast(mouseRay, out raycastHit))
+        private void ProcessMouseInput()
+        {
+            RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+
+            bool isAttackMove = false;
+
+            foreach(var hit in hits)
+            {
+                if (hit.transform.TryGetComponent(out Enemy enemy))
                 {
-                    if (raycastHit.transform.gameObject.TryGetComponent<Enemy>(out Enemy enemy))
-                    {
-                        movement.AttackMoveCharacter(enemy.transform);
-                    }
-                    else
-                    {
-                        movement.MoveCharacter(raycastHit.point);
+                    fighter.AttackToTarget(enemy);
+                    isAttackMove = true;
+                }
+                else { continue; }
+            }
 
-                    }
+            if (!isAttackMove)
+            {
+                if (Physics.Raycast(GetMouseRay(), out RaycastHit hit))
+                {
+                    movement.MoveCharacter(hit.point);
                 }
             }
         }
 
-        private void PlayerAnimationController()
+        private static Ray GetMouseRay()
         {
-            Vector3 velocity = movement.GetCharacterVelocity();
-            Vector3 localVelocity = transform.InverseTransformDirection(velocity);
-
-            float speed = localVelocity.z;
-            animator.SetFloat("forwardSpeed", speed);
+            return Camera.main.ScreenPointToRay(Input.mousePosition);
         }
     }
 }

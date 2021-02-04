@@ -39,8 +39,11 @@ namespace RPG.Controller
             {
                 if (hit.transform.TryGetComponent(out Enemy enemy))
                 {
-                    fighter.AttackToTarget(enemy);
-                    isAttackMove = true;
+                    if(fighter.IsFeasibleTarget(enemy.ReturnEnemyHealthComponent()))
+                    {
+                        fighter.AttackToTarget(enemy);
+                        isAttackMove = true;
+                    }
                 }
                 else { continue; }
             }

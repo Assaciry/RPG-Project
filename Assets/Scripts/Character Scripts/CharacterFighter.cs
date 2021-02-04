@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using RPG.Core;
-using System;
+using RPG.AnimationControl;
 using RPG.Movement;
 using System.Collections;
 
@@ -10,6 +10,7 @@ namespace RPG.Combat
     {
         ActionScheduler scheduler;
         CharacterMovement movement;
+        AnimationController animatonControl;
 
         Transform hitTarget;
 
@@ -24,6 +25,7 @@ namespace RPG.Combat
         private void Start()
         {
             scheduler = GetComponent<ActionScheduler>();
+            animatonControl = GetComponent<AnimationController>();
             movement = GetComponent<CharacterMovement>();
         }
 
@@ -37,12 +39,11 @@ namespace RPG.Combat
             scheduler.StartAction(this);
             cancelAttack = false;
 
-            StartCoroutine(AttackChaseTarget(target.transform));
-
-            hitTarget = target.transform;      
+            StartCoroutine(AttackChaseTarget(target));
+            hitTarget = target.transform;
         }
 
-        private IEnumerator AttackChaseTarget(Transform target)
+        private IEnumerator AttackChaseTarget<T>(T target) where T: MonoBehaviour
         {  
             while(true && !cancelAttack)
             {
@@ -59,36 +60,46 @@ namespace RPG.Combat
 
                 else
                 {
-                    AdjustRotation(targetDirection);
-                    HitToTarget();   
+                    HitToTarget(target);
+                    AdjustRotation(target.transform);
                 }
 
                 yield return new WaitForSeconds(1f);
             }
-            
         }
 
-        public void HitToTarget()
+        private void HitToTarget<T>(T target) where T: MonoBehaviour
         {
-            if (timeSinceLastAttack > timeBetweenAttacks)
+            if(!target.GetComponent<Health>().IsCharacterDead())
             {
-                BroadcastMessage("AttackAnimationPlay");
-                timeSinceLastAttack = 0f;
-            }
+                if (timeSinceLastAttack > timeBetweenAttacks)
+                {
+                    animatonControl.AttackAnimationPlay();
+                    timeSinceLastAttack = 0f;
+                }
+            }  
         }
 
         void Hit()
         {
             if (hitTarget == null) return;
-            hitTarget.GetComponent<Health>().TakeDamage(weaponDamage);
+
+            Health targetHealth = hitTarget.GetComponent<Health>();
+            if (targetHealth.IsCharacterDead()) return;
+
+            targetHealth.TakeDamage(weaponDamage);
         }
 
-        private void AdjustRotation(Vector3 targetDirection)
+        public bool IsFeasibleTarget<T>(T target) where T : Health
         {
-            var newRotation = Quaternion.LookRotation(-targetDirection);
-            newRotation.x = 0f;
-            newRotation.z = 0f;
-            transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, 180 * Time.deltaTime);
+            if (target.IsCharacterDead()) return false;
+            else return true;
+        }
+
+        private void AdjustRotation(Transform target)
+        {
+            if (GetComponent<Health>().IsCharacterDead() || target.GetComponent<Health>().IsCharacterDead()) return;
+            transform.LookAt(target);
         }
 
         public void Cancel()

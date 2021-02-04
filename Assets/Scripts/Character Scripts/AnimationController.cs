@@ -1,40 +1,47 @@
 ﻿using UnityEngine;
-using UnityEngine.AI;
-using RPG.Combat;
+using RPG.Movement;
 
 namespace RPG.AnimationControl
 {
     public class AnimationController : MonoBehaviour
     {
         Animator animator;
-        NavMeshAgent agent;
 
-        CharacterFighter fighter;
+        CharacterMovement movement;
 
         private void Start()
         {
             animator = GetComponentInChildren<Animator>();
-            agent = GetComponent<NavMeshAgent>();
-            fighter = GetComponent<CharacterFighter>();
-        }
-
-        private void AttackAnimationPlay()
-        {
-            animator.SetTrigger("attack");
+            movement = GetComponent<CharacterMovement>();
         }
 
         private void Update()
         {
-            PlayerAnimationController();
+            MovementAnimation();
         }
 
-        private void PlayerAnimationController()
+        private void MovementAnimation()
         {
-            Vector3 velocity = agent.velocity;
+            Vector3 velocity = movement.GetVelocity();
             Vector3 localVelocity = transform.InverseTransformDirection(velocity);
 
             float speed = localVelocity.z;
             animator.SetFloat("forwardSpeed", speed);
+        }
+
+        public void AttackAnimationPlay()
+        {
+            animator.SetTrigger("attack");
+        }
+
+        public void AttackAnimationStop()
+        {
+            animator.SetTrigger("stopAttack");
+        }
+
+        public void DeathAnimationPlay()
+        {
+            animator.SetTrigger("death");
         }
     }
 }

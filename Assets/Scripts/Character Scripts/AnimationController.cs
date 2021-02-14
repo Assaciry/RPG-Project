@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using RPG.Movement;
+using System;
 
 namespace RPG.AnimationControl
 {
     public class AnimationController : MonoBehaviour
     {
         Animator animator;
-
         CharacterMovement movement;
 
         private void Start()
@@ -22,7 +22,10 @@ namespace RPG.AnimationControl
 
         private void MovementAnimation()
         {
-            Vector3 velocity = movement.GetVelocity();
+            if (movement == null) return;
+
+            Func<Vector3> velocityFunc = movement.GetVelocity();
+            Vector3 velocity = velocityFunc();
             Vector3 localVelocity = transform.InverseTransformDirection(velocity);
 
             float speed = localVelocity.z;

@@ -8,17 +8,21 @@ namespace RPG.Enemies
 {
     public class EnemyControl : MonoBehaviour
     {
+        [SerializeField] private float patrolSpeed = 2f;
+        [SerializeField] private float chaseSpeed = 6f;
+
         CharacterMovement movement;
         CharacterFighter fighter;
 
         public PatrolPath patrolPath;
         private List<Transform> Waypoints;
 
-        int waypointIndex = 0;
+        int waypointInit = 0;
         private bool keepPatrol = true;
 
-        private const double waypointCheckDistance = 1f;
+        private const float waypointCheckDistance = 1f;
         private const float suspiciounTime = 3f;
+        private const float dwellingTime = 3f;
 
         void Start()
         {
@@ -26,63 +30,48 @@ namespace RPG.Enemies
             fighter = GetComponent<CharacterFighter>();
 
             GetPatrolPath();
-            PatrolBehaviour();
+        }
+
+        private void Update()
+        {
+            if(keepPatrol)
+            {
+                PatrolRoutine();
+            }
         }
 
         private void GetPatrolPath()
         {
             if (patrolPath == null) return;
-            Waypoints = patrolPath.ReturnWaypointTransforms();
+            Waypoints = patrolPath.ReturnWaypointTransforms(); 
         }
 
-        private void PatrolBehaviour()
+        private void PatrolRoutine()
         {
-            keepPatrol = true;
-            if (Waypoints != null && Waypoints.Count > 1)
-                StartCoroutine(EnemyPatrolWaypoints());
-        }
+            if (Waypoints == null || Waypoints.Count <= 1) return;
 
-        private IEnumerator EnemyPatrolWaypoints()
-        {
-            while (true && keepPatrol)
+            movement.SetSpeed(patrolSpeed);
+            var destination = Waypoints[waypointInit].position;
+            movement.MoveCharacter(destination);
+
+            if(movement.IsReachedPosition(destination, waypointCheckDistance))
             {
-                Vector3 wayPos = Waypoints[waypointIndex].position;
-                movement.MoveCharacter(wayPos);
-
-                if (IsReachedPosition(wayPos))
-                {
-                    waypointIndex++;
-                }
-                waypointIndex = waypointIndex % Waypoints.Count;
-                yield return new WaitForSeconds(1f);
+                waypointInit++;
+                waypointInit %= Waypoints.Count;
             }
-        }
-
-        private IEnumerator SuspicionBehaviour(Vector3 playerPos)
-        {
-            while(true)
-            {
-                if (IsReachedPosition(playerPos)) break;
-                yield return new WaitForSeconds(suspiciounTime);
-            }
-            PatrolBehaviour();
-        }
-
-        private bool IsReachedPosition(Vector3 targetPos)
-        {
-            return Vector3.Distance(targetPos, transform.position) < waypointCheckDistance;
-        }
-
-        public void AttackRangeExit(Vector3 player)
-        {
-            movement.MoveCharacter(player);
-            StartCoroutine(SuspicionBehaviour(player));
         }
 
         public void AttackToPlayer(MonoBehaviour player)
         {
             keepPatrol = false;
+            movement.SetSpeed(chaseSpeed);
             fighter.AttackToTarget(player);
+        }
+
+        public void AttackRangeExit(Vector3 player)
+        {
+            movement.MoveCharacter(player);
+            keepPatrol = true;
         }
     }
 }

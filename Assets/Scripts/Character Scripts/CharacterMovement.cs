@@ -2,10 +2,12 @@
 using UnityEngine.AI;
 using RPG.Core;
 using RPG.Combat;
+using System;
+using RPG.Saving;
 
 namespace RPG.Movement
 {
-    public class CharacterMovement : MonoBehaviour, IAction
+    public class CharacterMovement : MonoBehaviour, IAction, ISaveable
     {
         NavMeshAgent agent;
         ActionScheduler scheduler;
@@ -34,9 +36,24 @@ namespace RPG.Movement
             if (!agentHealth.IsCharacterDead())
             {
                 agent.isStopped = false;
-
                 agent.SetDestination(position);
             }
+        }
+
+        public void SetSpeed(float speed)
+        {
+            if(agent != null)
+                agent.speed = speed;
+        }
+
+        public Func<Vector3> GetVelocity()
+        {
+            return () => agent.velocity;
+        }
+
+        public bool IsReachedPosition(Vector3 targetPos, float checkDistance)
+        {
+            return Vector3.Distance(targetPos, transform.position) < checkDistance;
         }
 
         public void Cancel()
@@ -44,9 +61,18 @@ namespace RPG.Movement
             agent.isStopped = true;
         }
 
-        public Vector3 GetVelocity()
+        public object CaptureState()
         {
-            return agent.velocity;
+            return new SerializableVector3(transform.position);
+        }
+
+        public void RestoreState(object state)
+        {
+            SerializableVector3 position = (SerializableVector3) state;
+
+            agent.enabled = false;
+            transform.position = position.ToVector();
+            agent.enabled = true;
         }
     }
 }

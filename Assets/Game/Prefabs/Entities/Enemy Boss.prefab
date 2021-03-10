@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67f50dca8de5ed3439e9b2efdf1f7992, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  health: 300
 --- !u!114 &3954722595427757452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,7 +202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   patrolSpeed: 2
-  chaseSpeed: 6
+  chaseSpeed: 5
   patrolPath: {fileID: 0}
 --- !u!114 &3954722595427757451
 MonoBehaviour:

@@ -5,9 +5,11 @@ namespace RPG.Enemies
 {
     public class Enemy : MonoBehaviour
     {
-        Health health;
+        private Health health;
 
-        private void Start()
+
+
+        private void Awake()
         {
             health = GetComponent<Health>();
         }

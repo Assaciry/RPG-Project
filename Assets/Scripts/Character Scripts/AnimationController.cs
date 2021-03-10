@@ -4,15 +4,20 @@ using System;
 
 namespace RPG.AnimationControl
 {
-    public class AnimationController : MonoBehaviour
+    public class AnimationController : MonoBehaviour, IController
     {
         Animator animator;
         CharacterMovement movement;
 
-        private void Start()
+        private void Awake()
         {
             animator = GetComponentInChildren<Animator>();
             movement = GetComponent<CharacterMovement>();
+        }
+
+        private void AnimationController_OnCharacterDeath(object sender, EventArgs e)
+        {
+            Disable();
         }
 
         private void Update()
@@ -24,8 +29,7 @@ namespace RPG.AnimationControl
         {
             if (movement == null) return;
 
-            Func<Vector3> velocityFunc = movement.GetVelocity();
-            Vector3 velocity = velocityFunc();
+            Vector3 velocity = movement.GetVelocity();
             Vector3 localVelocity = transform.InverseTransformDirection(velocity);
 
             float speed = localVelocity.z;
@@ -45,6 +49,11 @@ namespace RPG.AnimationControl
         public void DeathAnimationPlay()
         {
             animator.SetTrigger("death");
+        }
+
+        public void Disable()
+        {
+            enabled = false;
         }
     }
 }

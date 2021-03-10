@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using RPG.Controller;
-using RPG.Core;
-using RPG.Combat;
 
 namespace RPG.Enemies
 {
@@ -18,12 +16,11 @@ namespace RPG.Enemies
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.TryGetComponent(out PlayerControl player))
+            if(other.TryGetComponent(out ITargetable player))
             {
                 rangeExit.SetIsChaseable(true);
                 control.AttackToPlayer(player);
             }
         }
-
     }
 }

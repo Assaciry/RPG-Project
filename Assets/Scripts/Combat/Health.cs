@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using RPG.AnimationControl;
 using RPG.Saving;
 
@@ -7,6 +8,7 @@ namespace RPG.Combat
     public class Health : MonoBehaviour, ISaveable
     {
         [SerializeField] float health = 100f;
+
         private bool isDead = false;
 
         public void TakeDamage(float damage)
@@ -16,7 +18,6 @@ namespace RPG.Combat
             if(health <= 0f && !isDead)
             {
                 CharacterDeath();
-
             }
         }
 
@@ -25,6 +26,14 @@ namespace RPG.Combat
             isDead = true;
             AnimationController animation = GetComponent<AnimationController>();
             animation.DeathAnimationPlay();
+
+            GetComponent<Collider>().enabled = false;
+
+            IController[] controllers = GetComponents<IController>();
+            foreach(IController controller in controllers)
+            {
+                controller.Disable();
+            }
         }
 
         public bool IsCharacterDead()
@@ -44,7 +53,6 @@ namespace RPG.Combat
             if (health <= 0f && !isDead)
             {
                 CharacterDeath();
-
             }
         }
     }

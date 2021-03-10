@@ -6,7 +6,7 @@ using System.Collections;
 
 namespace RPG.Enemies
 {
-    public class EnemyControl : MonoBehaviour
+    public class EnemyControl : MonoBehaviour, IController, ITargetable
     {
         [SerializeField] private float patrolSpeed = 2f;
         [SerializeField] private float chaseSpeed = 6f;
@@ -23,6 +23,10 @@ namespace RPG.Enemies
         private const float waypointCheckDistance = 1f;
         private const float suspiciounTime = 3f;
         private const float dwellingTime = 3f;
+
+        public Vector3 targetPos => transform.position;
+
+        public Health targetHealth => GetComponent<Health>();
 
         void Start()
         {
@@ -61,7 +65,7 @@ namespace RPG.Enemies
             }
         }
 
-        public void AttackToPlayer(MonoBehaviour player)
+        public void AttackToPlayer(ITargetable player)
         {
             keepPatrol = false;
             movement.SetSpeed(chaseSpeed);
@@ -72,6 +76,13 @@ namespace RPG.Enemies
         {
             movement.MoveCharacter(player);
             keepPatrol = true;
+        }
+
+        public void Disable()
+        {
+            Destroy(transform.Find("ChaseRangeTrigger").gameObject);
+            Destroy(transform.Find("AttackRangeTrigger").gameObject);
+            enabled = false;
         }
     }
 }

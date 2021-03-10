@@ -9,12 +9,15 @@ namespace RPG.Enemies
         EnemyControl control;
         private bool isChaseable;
 
-        private void Start()
+        SphereCollider sc;
+
+        private void Awake()
         {
             control = GetComponentInParent<EnemyControl>();
             isChaseable = false;
         }
-
+        
+        
         public void SetIsChaseable(bool isChaseable)
         {
             this.isChaseable = isChaseable;

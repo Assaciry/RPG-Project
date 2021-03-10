@@ -5,12 +5,16 @@ using RPG.Enemies;
 
 namespace RPG.Controller
 {
-    public class PlayerControl : MonoBehaviour
+    public class PlayerControl : MonoBehaviour, IController, ITargetable
     {
         CharacterFighter fighter;
         CharacterMovement movement;
 
-        private void Start()
+        public Vector3 targetPos => transform.position;
+
+        public Health targetHealth => GetComponent<Health>();
+
+        private void Awake()
         {
             movement = GetComponent<CharacterMovement>();
             fighter = GetComponent<CharacterFighter>();
@@ -34,16 +38,14 @@ namespace RPG.Controller
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
 
             bool isAttackMove = false;
-
             foreach(var hit in hits)
             {
-                if (hit.transform.TryGetComponent(out Enemy enemy))
+                if (hit.transform.TryGetComponent(out ITargetable target) && 
+                    !target.targetHealth.IsCharacterDead() && 
+                    target != this)
                 {
-                    if(fighter.IsFeasibleTarget(enemy.ReturnEnemyHealthComponent()))
-                    {
-                        fighter.AttackToTarget(enemy);
-                        isAttackMove = true;
-                    }
+                    fighter.AttackToTarget(target);
+                    isAttackMove = true;
                 }
                 else { continue; }
             }
@@ -60,6 +62,11 @@ namespace RPG.Controller
         private static Ray GetMouseRay()
         {
             return Camera.main.ScreenPointToRay(Input.mousePosition);
+        }
+
+        public void Disable()
+        {
+            this.enabled = false;
         }
     }
 }

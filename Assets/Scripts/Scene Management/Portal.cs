@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using RPG.Core;
-using RPG.Controller;
+using UnityEngine.AI;
 
 namespace RPG.SceneManagement
 {
@@ -27,16 +27,24 @@ namespace RPG.SceneManagement
         {
             DontDestroyOnLoad(gameObject);
 
+            //Fade out effect
             Fader fader = FindObjectOfType<Fader>();
             yield return fader.FadeOut(fadeOutTime);
 
+            // Saving scene state
+            SavingWrapper saving = FindObjectOfType<SavingWrapper>();
+            saving.Save();
+
+            //Loading next scene
             yield return SceneManager.LoadSceneAsync(sceneToLoad);
 
+            //saving.Load();
+
+            // Spawning player on portal spawn point
             Portal portalToTeleport = GetOtherPortal();
             UpdatePlayer(portalToTeleport);
 
-            yield return new WaitForSeconds(fadeOutTime);
-
+            //Fade in effect
             yield return fader.FadeIn(fadeInTime);
 
             Destroy(gameObject);
@@ -45,7 +53,7 @@ namespace RPG.SceneManagement
         private void UpdatePlayer(Portal portalToTeleport)
         {
             GameObject player = GameObject.FindWithTag("Player");
-            player.transform.position = portalToTeleport.spawnPoint.position;
+            player.transform.position = portalToTeleport.transform.Find("SpawnPoint").position;
             player.transform.rotation = portalToTeleport.spawnPoint.rotation;
         }
 

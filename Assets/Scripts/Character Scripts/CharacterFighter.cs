@@ -6,13 +6,11 @@ using System.Collections;
 
 namespace RPG.Combat
 {
-    public class CharacterFighter : MonoBehaviour, IAction
+    public class CharacterFighter : MonoBehaviour, IAction, IController
     {
         ActionScheduler scheduler;
         CharacterMovement movement;
         AnimationController animatonControl;
-
-        Transform hitTarget;
 
         public float weaponDamage = 10f;
         public float weaponRange = 2f;
@@ -22,7 +20,9 @@ namespace RPG.Combat
 
         private bool cancelAttack = false;
 
-        private void Start()
+        ITargetable targetable;
+
+        private void Awake()
         {
             scheduler = GetComponent<ActionScheduler>();
             animatonControl = GetComponent<AnimationController>();
@@ -34,22 +34,23 @@ namespace RPG.Combat
             timeSinceLastAttack += Time.deltaTime;
         }
 
-        public void AttackToTarget<T>(T target) where T: MonoBehaviour
+        public void AttackToTarget(ITargetable target)
         {
             scheduler.StartAction(this);
             cancelAttack = false;
 
             StartCoroutine(AttackChaseTarget(target));
-            hitTarget = target.transform;
         }
 
-        private IEnumerator AttackChaseTarget<T>(T target) where T: MonoBehaviour
-        {  
-            while(true && !cancelAttack)
+        private IEnumerator AttackChaseTarget(ITargetable target)
+        {
+            AdjustRotation(target.targetPos);
+
+            while (!cancelAttack && !target.targetHealth.IsCharacterDead())
             {
-                Transform targetTransform = target.transform;
-                Vector3 targetDirection = (transform.position - targetTransform.position).normalized;
-                Vector3 targetPos = targetTransform.position + weaponRange * targetDirection;
+                Vector3 targetP = target.targetPos;
+                Vector3 targetDirection = (transform.position - targetP).normalized;
+                Vector3 targetPos = targetP + weaponRange * targetDirection;
 
                 float distance = Vector3.Distance(transform.position, targetPos);
 
@@ -61,51 +62,44 @@ namespace RPG.Combat
                 else
                 {
                     HitToTarget(target);
-                    AdjustRotation(target.transform);
+                    
                 }
 
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.05f);
             }
         }
 
-        private void HitToTarget<T>(T target) where T: MonoBehaviour
+        private void HitToTarget(ITargetable target)
         {
-            if(!target.GetComponent<Health>().IsCharacterDead())
+            if (timeSinceLastAttack > timeBetweenAttacks)
             {
-                if (timeSinceLastAttack > timeBetweenAttacks)
-                {
-                    animatonControl.AttackAnimationPlay();
-                    timeSinceLastAttack = 0f;
-                }
-            }  
+                AdjustRotation(target.targetPos);
+
+                targetable = target;
+                animatonControl.AttackAnimationPlay();
+                timeSinceLastAttack = 0f;
+            }
         }
 
         void Hit()
         {
-            if (hitTarget == null) return;
-
-            Health targetHealth = hitTarget.GetComponent<Health>();
-            if (targetHealth.IsCharacterDead()) return;
-
-            targetHealth.TakeDamage(weaponDamage);
+            targetable.targetHealth.TakeDamage(weaponDamage);
         }
 
-        public bool IsFeasibleTarget<T>(T target) where T : Health
+        private void AdjustRotation(Vector3 target)
         {
-            if (target.IsCharacterDead()) return false;
-            else return true;
-        }
-
-        private void AdjustRotation(Transform target)
-        {
-            if (GetComponent<Health>().IsCharacterDead() || target.GetComponent<Health>().IsCharacterDead()) return;
             transform.LookAt(target);
         }
 
         public void Cancel()
         {
             cancelAttack = true;
-            hitTarget = null;
+        }
+
+        public void Disable()
+        {
+            StopAllCoroutines();
+            enabled = false;
         }
     }
 }

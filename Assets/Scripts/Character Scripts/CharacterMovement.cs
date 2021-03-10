@@ -7,13 +7,13 @@ using RPG.Saving;
 
 namespace RPG.Movement
 {
-    public class CharacterMovement : MonoBehaviour, IAction, ISaveable
+    public class CharacterMovement : MonoBehaviour, IAction, ISaveable, IController
     {
-        NavMeshAgent agent;
-        ActionScheduler scheduler;
-        Health agentHealth;
+        private NavMeshAgent agent;
+        private ActionScheduler scheduler;
+        private Health agentHealth;
 
-        private void Start()
+        private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
             scheduler = GetComponent<ActionScheduler>();
@@ -22,22 +22,15 @@ namespace RPG.Movement
 
         public void MoveCharacter(Vector3 position)
         {
-            if(!agentHealth.IsCharacterDead())
-            {
-                agent.isStopped = false;
-                scheduler.StartAction(this);
-
-                agent.SetDestination(position);
-            }   
+            agent.isStopped = false;
+            scheduler.StartAction(this);
+            agent.SetDestination(position); 
         }
 
         public void AttackMoveCharacter(Vector3 position)
         {
-            if (!agentHealth.IsCharacterDead())
-            {
-                agent.isStopped = false;
-                agent.SetDestination(position);
-            }
+            agent.isStopped = false;
+            agent.SetDestination(position);
         }
 
         public void SetSpeed(float speed)
@@ -46,9 +39,9 @@ namespace RPG.Movement
                 agent.speed = speed;
         }
 
-        public Func<Vector3> GetVelocity()
+        public Vector3 GetVelocity()
         {
-            return () => agent.velocity;
+            return agent.velocity;
         }
 
         public bool IsReachedPosition(Vector3 targetPos, float checkDistance)
@@ -70,9 +63,16 @@ namespace RPG.Movement
         {
             SerializableVector3 position = (SerializableVector3) state;
 
-            agent.enabled = false;
+            GetComponent<NavMeshAgent>().enabled = false;
             transform.position = position.ToVector();
-            agent.enabled = true;
+            GetComponent<NavMeshAgent>().enabled = true;
+        }
+
+        public void Disable()
+        {
+            Cancel();
+            agent.enabled = false;
+            enabled = false;
         }
     }
 }

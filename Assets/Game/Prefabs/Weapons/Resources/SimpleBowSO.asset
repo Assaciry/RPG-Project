@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6477d40ce85534d439a6f1efbb34e62d, type: 3}
+  m_Name: SimpleBowSO
+  m_EditorClassIdentifier: 
+  Prefab: {fileID: 867072162045669051, guid: 90579a9908e315041a65180cc091643b, type: 3}
+  Name: Simple Bow
+  animationOverride: {fileID: 22100000, guid: 77a60c0938749c3458aec68bc1884024, type: 2}
+  Damage: 20
+  Range: 15
+  timeBetweenAttacks: 2
+  criticalChance: 8
+  criticalExtraDamage: 8
+  isRightHanded: 0
+  weaponSound: {fileID: 8300000, guid: bf03f714419c3b048ad4ff8b370d10d4, type: 3}
+  projectile: {fileID: 11400000, guid: 06176b41591c2c341b3d4b4d997eb71a, type: 2}

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fb24799c4985641baa4d474361bc7a, type: 3}
+  m_Name: Fists
+  m_EditorClassIdentifier: 
+  Prefab: {fileID: 0}
+  Name: Good Ol' Fists
+  animationOverride: {fileID: 0}
+  Damage: 8
+  Range: 1
+  timeBetweenAttacks: 1
+  criticalChance: 6
+  criticalExtraDamage: 6
+  isRightHanded: 1
+  weaponSound: {fileID: 8300000, guid: 8c4a6d3173c94d04c9896a4afd752f69, type: 3}
+  damageRadius: 2

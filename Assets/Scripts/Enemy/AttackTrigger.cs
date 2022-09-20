@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using RPG.Controller;
 
 namespace RPG.Enemies
 {
@@ -20,6 +19,7 @@ namespace RPG.Enemies
             {
                 rangeExit.SetIsChaseable(true);
                 control.AttackToPlayer(player);
+                control.AggroMobCall(player);
             }
         }
     }

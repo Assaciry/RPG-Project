@@ -103,8 +103,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e538dedfb90bd2408e0ffff075aaff7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: 0
+  sceneToLoad: 1
   spawnPoint: {fileID: 5794994884949629733}
+  fadeOutTime: 0.5
+  fadeInTime: 1.5
 --- !u!1 &5303848804849197481
 GameObject:
   m_ObjectHideFlags: 0
@@ -129,7 +131,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5303848804849197481}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4, y: -3.607, z: 0}
+  m_LocalPosition: {x: -1.54, y: -4.15, z: 0.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1984636386121411986}
@@ -145,7 +147,7 @@ PrefabInstance:
     - target: {fileID: 6527193727217806566, guid: 0ff6361e05db7f84ba5400a131a397b7,
         type: 3}
       propertyPath: m_Name
-      value: Portal Variant
+      value: portalModel
       objectReference: {fileID: 0}
     - target: {fileID: 6527193727217806566, guid: 0ff6361e05db7f84ba5400a131a397b7,
         type: 3}

@@ -5,4 +5,5 @@ using UnityEngine;
 public interface IController
 {
     void Disable();
+    void Enable();
 }

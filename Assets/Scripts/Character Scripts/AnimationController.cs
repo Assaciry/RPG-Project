@@ -13,11 +13,13 @@ namespace RPG.AnimationControl
         {
             animator = GetComponentInChildren<Animator>();
             movement = GetComponent<CharacterMovement>();
+
+            GetComponent<Combat.Health>().OnCharacterDeath += AnimationController_OnCharacterDeath;
         }
 
         private void AnimationController_OnCharacterDeath(object sender, EventArgs e)
         {
-            Disable();
+            DeathAnimationPlay();
         }
 
         private void Update()
@@ -46,14 +48,30 @@ namespace RPG.AnimationControl
             animator.SetTrigger("stopAttack");
         }
 
+        public void AttackAnimationOverride(AnimatorOverrideController weaponAnimOverride)
+        {
+            animator.runtimeAnimatorController = weaponAnimOverride;
+        }
+
         public void DeathAnimationPlay()
         {
             animator.SetTrigger("death");
         }
 
+        public Animator GetAnimator()
+        {
+            return animator;
+        }
+
         public void Disable()
         {
+            animator.SetFloat("forwardSpeed", 0);
             enabled = false;
+        }
+
+        public void Enable()
+        {
+            enabled = true;
         }
     }
 }

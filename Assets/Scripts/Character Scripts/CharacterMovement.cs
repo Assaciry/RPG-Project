@@ -3,11 +3,12 @@ using UnityEngine.AI;
 using RPG.Core;
 using RPG.Combat;
 using System;
-using RPG.Saving;
+using RPG.ScratchSaving;
+using System.Collections.Generic;
 
 namespace RPG.Movement
 {
-    public class CharacterMovement : MonoBehaviour, IAction, ISaveable, IController
+    public class CharacterMovement : MonoBehaviour, IAction, IScratchSaveable, IController
     {
         private NavMeshAgent agent;
         private ActionScheduler scheduler;
@@ -61,10 +62,11 @@ namespace RPG.Movement
 
         public void RestoreState(object state)
         {
-            SerializableVector3 position = (SerializableVector3) state;
-
+            scheduler.CancelCurrentAction();
             GetComponent<NavMeshAgent>().enabled = false;
-            transform.position = position.ToVector();
+
+            transform.position = ((SerializableVector3)state).ToVector3();
+
             GetComponent<NavMeshAgent>().enabled = true;
         }
 
@@ -73,6 +75,12 @@ namespace RPG.Movement
             Cancel();
             agent.enabled = false;
             enabled = false;
+        }
+
+        public void Enable()
+        {
+            agent.enabled = true;
+            enabled = true;
         }
     }
 }

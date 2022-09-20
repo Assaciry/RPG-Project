@@ -5,6 +5,11 @@ using UnityEngine;
 
 public interface ITargetable
 {
+    Transform targetTransform
+    {
+        get;
+    }
+
     Vector3 targetPos
     {
         get;
@@ -13,5 +18,11 @@ public interface ITargetable
     Health targetHealth
     {
         get;
+    }
+
+    Vector3 focusPoint
+    {
+        get;
+        set;
     }
 }
